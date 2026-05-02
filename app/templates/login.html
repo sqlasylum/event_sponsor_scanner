@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Sign In — Event Scanner{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Welcome</h1>
+  <p>Enter your email address to record this scan.</p>
+
+  {% if error %}
+  <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="/login">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label for="email">Email address</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="you@company.com"
+      required
+      autofocus
+    >
+    <button type="submit">Continue</button>
+  </form>
+</div>
+{% endblock %}

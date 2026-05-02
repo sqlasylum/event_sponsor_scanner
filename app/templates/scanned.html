@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Scan Recorded — Event Scanner{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="check">&#10003;</div>
+  <h1>Contact Captured</h1>
+  <p class="sub">Badge <strong>{{ attendee_id }}</strong> has been saved to your leads.</p>
+  <p class="sub">Logged in as <strong>{{ email }}</strong></p>
+  <p class="hint">You can close this tab or scan another badge.</p>
+</div>
+{% endblock %}
