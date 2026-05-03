@@ -29,3 +29,4 @@ class Scan(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+    notes: Mapped[str | None] = mapped_column(String, nullable=True)

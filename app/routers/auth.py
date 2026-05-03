@@ -24,9 +24,20 @@ def get_sponsor_email(request: Request) -> str | None:
 
 
 @router.get("/login")
-async def login_page(request: Request, next: str = "/"):
+async def login_page(request: Request, next: str = "/login"):
+    email = get_sponsor_email(request)
+    scan_count = None
+    if email:
+        from sqlalchemy import select, func
+        from database import SessionLocal
+        from models import Scan
+        async with SessionLocal() as db:
+            result = await db.execute(
+                select(func.count()).where(Scan.sponsor_email == email)
+            )
+            scan_count = result.scalar()
     return templates.TemplateResponse(
-        "login.html", {"request": request, "next": next}
+        "login.html", {"request": request, "next": next, "email": email, "scan_count": scan_count}
     )
 
 
@@ -44,7 +55,6 @@ async def login_submit(
             status_code=422,
         )
 
-    # Prevent open redirect — only allow relative paths
     if not next.startswith("/"):
         next = "/"
 
@@ -57,4 +67,11 @@ async def login_submit(
         httponly=True,
         samesite="lax",
     )
+    return response
+
+
+@router.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/login", status_code=302)
+    response.delete_cookie(key=COOKIE_NAME)
     return response

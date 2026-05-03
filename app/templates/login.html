@@ -3,7 +3,17 @@
 {% block content %}
 <div class="card">
   <h1>Welcome</h1>
+
+  {% if email %}
+  <p class="sub">Signed in as <strong>{{ email }}</strong></p>
+  <div class="scan-count-block">
+    <span class="scan-count-num">{{ scan_count }}</span>
+    <span class="scan-count-label">scan{{ 's' if scan_count != 1 else '' }} recorded</span>
+  </div>
+  <p class="hint">To switch accounts, enter a different email below. &nbsp;·&nbsp; <a href="/logout" class="logout-link">Log out</a></p>
+  {% else %}
   <p>Enter your email address to record this scan.</p>
+  {% endif %}
 
   {% if error %}
   <p class="error">{{ error }}</p>

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ event_name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ event_name }}</h1>
+  <p class="sub">QR code lead capture for event sponsors.</p>
+
+  <div class="status-row">
+    <span class="status-dot {% if db_ok %}ok{% else %}err{% endif %}"></span>
+    <span class="status-word {% if db_ok %}ok{% else %}err{% endif %}">{% if db_ok %}Operational{% else %}Degraded{% endif %}</span>
+    <span class="status-detail">— Database {% if db_ok %}connected{% else %}unreachable{% endif %}</span>
+  </div>
+
+  {% if db_ok %}
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-num">{{ scan_count }}</span>
+      <span class="stat-label">Scans</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">{{ sponsor_count }}</span>
+      <span class="stat-label">Sponsors</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <p class="hint">Scan an attendee badge QR code to capture a lead.</p>
+</div>
+{% endblock %}

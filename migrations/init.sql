@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS scans (
     id            SERIAL PRIMARY KEY,
     attendee_id   TEXT NOT NULL,
     sponsor_email TEXT NOT NULL REFERENCES sponsors(email),
-    scanned_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    scanned_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    notes         TEXT
 );
 
 CREATE INDEX IF NOT EXISTS scans_attendee_id_idx ON scans(attendee_id);

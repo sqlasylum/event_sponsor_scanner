@@ -93,3 +93,131 @@ button:hover { background: #3182ce; }
   font-size: 0.875rem;
   margin-bottom: 1rem;
 }
+
+.notes-form {
+  margin-top: 1.25rem;
+  text-align: left;
+}
+
+.notes-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.35rem;
+}
+
+.optional {
+  font-weight: 400;
+  color: #718096;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  border: 1.5px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+  margin-bottom: 0.75rem;
+}
+
+textarea:focus { border-color: #4299e1; }
+
+.save-status {
+  font-size: 0.875rem;
+  min-height: 1.25rem;
+  margin-top: 0.4rem;
+  color: #718096;
+}
+
+.save-status.saved { color: #48bb78; }
+.save-status.error { color: #e53e3e; }
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.ok  { background: #48bb78; }
+.status-dot.err { background: #e53e3e; }
+
+.status-word {
+  font-weight: 700;
+}
+
+.status-word.ok  { color: #2f855a; }
+.status-word.err { color: #c53030; }
+
+.logout-link {
+  color: #718096;
+  text-decoration: underline;
+}
+
+.logout-link:hover { color: #4a5568; }
+
+.scan-count-block {
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-count-num {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+
+.scan-count-label {
+  font-size: 0.85rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.2rem;
+}

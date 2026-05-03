@@ -6,6 +6,42 @@
   <h1>Contact Captured</h1>
   <p class="sub">Badge <strong>{{ attendee_id }}</strong> has been saved to your leads.</p>
   <p class="sub">Logged in as <strong>{{ email }}</strong></p>
-  <p class="hint">You can close this tab or scan another badge.</p>
+
+  <form id="notes-form" class="notes-form">
+    <label for="notes">Notes <span class="optional">(optional)</span></label>
+    <textarea id="notes" name="notes" rows="4" placeholder="Add notes about this contact…"></textarea>
+    <button type="submit" id="save-btn">Save Notes</button>
+    <p id="save-status" class="save-status" aria-live="polite"></p>
+  </form>
+
+  <p class="hint">You can close this tab or scan another badge. &nbsp;·&nbsp; <a href="/logout" class="logout-link">Sign in as someone else</a></p>
 </div>
+
+<script>
+  const form = document.getElementById('notes-form');
+  const status = document.getElementById('save-status');
+  const btn = document.getElementById('save-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    status.textContent = 'Saving…';
+    status.className = 'save-status';
+
+    const body = new URLSearchParams({ notes: document.getElementById('notes').value });
+    try {
+      const res = await fetch('/scan/{{ scan_id }}/notes', { method: 'POST', body });
+      if (res.ok) {
+        status.textContent = 'Notes saved.';
+        status.className = 'save-status saved';
+      } else {
+        throw new Error();
+      }
+    } catch {
+      status.textContent = 'Could not save. Please try again.';
+      status.className = 'save-status error';
+      btn.disabled = false;
+    }
+  });
+</script>
 {% endblock %}
