@@ -17,7 +17,17 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-*-24.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd*ubuntu-*24*amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
   }
 }
 
@@ -96,13 +106,12 @@ resource "aws_instance" "app" {
   key_name               = var.key_pair_name
 
   user_data = templatefile("${path.module}/user_data.sh", {
-    app_name       = var.app_name
+    repo_url       = var.repo_url
     database_url   = "postgresql+asyncpg://scanner:${var.db_password}@db:5432/scanner"
     secret_key     = var.secret_key
     admin_password = var.admin_password
     event_name     = var.event_name
     base_url       = var.base_url
-    admin_token    = var.admin_token
   })
 
   tags = { Name = var.app_name }

@@ -1,3 +1,8 @@
+variable "repo_url" {
+  description = "GitHub repository URL to clone onto the instance (e.g. https://github.com/your-org/event_sponsor_scanner.git)"
+  type        = string
+}
+
 variable "app_name" {
   type    = string
   default = "event-scanner"
@@ -51,11 +56,4 @@ variable "event_name" {
   description = "Display name shown on the status page"
   type        = string
   default     = "Event Sponsor Scanner"
-}
-
-variable "admin_token" {
-  description = "Bearer token for /admin/* routes (leave empty to disable auth)"
-  type        = string
-  default     = ""
-  sensitive   = true
 }

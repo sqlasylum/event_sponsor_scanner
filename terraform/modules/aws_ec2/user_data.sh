@@ -9,7 +9,7 @@ systemctl enable --now docker
 usermod -aG docker ubuntu
 
 # Clone the repo
-git clone https://github.com/your-org/event_sponsor_scanner.git /opt/app
+git clone ${repo_url} /opt/app
 cd /opt/app
 
 # Write env file
