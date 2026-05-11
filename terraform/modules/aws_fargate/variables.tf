@@ -33,6 +33,18 @@ variable "acm_certificate_arn" {
   default     = ""
 }
 
+variable "admin_password" {
+  description = "Password for /admin/* routes (username is always 'admin')"
+  type        = string
+  sensitive   = true
+}
+
+variable "event_name" {
+  description = "Display name shown on the status page"
+  type        = string
+  default     = "Event Sponsor Scanner"
+}
+
 variable "task_count" {
   description = "Number of ECS Fargate tasks to run"
   type        = number

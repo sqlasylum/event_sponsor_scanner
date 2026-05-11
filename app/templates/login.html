@@ -10,7 +10,8 @@
     <span class="scan-count-num">{{ scan_count }}</span>
     <span class="scan-count-label">scan{{ 's' if scan_count != 1 else '' }} recorded</span>
   </div>
-  <p class="hint">To switch accounts, enter a different email below. &nbsp;·&nbsp; <a href="/logout" class="logout-link">Log out</a></p>
+  <p class="hint">To switch accounts, enter a different email below.</p>
+  <a href="/logout" class="logout-link">Log out</a>
   {% else %}
   <p>Enter your email address to record this scan.</p>
   {% endif %}

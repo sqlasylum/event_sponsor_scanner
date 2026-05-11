@@ -1,12 +1,14 @@
-import os
 import io
+import secrets
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import StreamingResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from itsdangerous import URLSafeTimedSerializer
+from fastapi import HTTPException
 
 import config
 from database import engine, Base
@@ -14,6 +16,20 @@ from routers import scan, auth
 
 signer = URLSafeTimedSerializer(config.SECRET_KEY)
 templates = Jinja2Templates(directory="templates")
+_basic = HTTPBasic()
+
+
+def require_admin(credentials: HTTPBasicCredentials = Depends(_basic)):
+    ok_user = secrets.compare_digest(credentials.username.encode(), b"admin")
+    ok_pass = secrets.compare_digest(
+        credentials.password.encode(), config.ADMIN_PASSWORD.encode()
+    )
+    if not (ok_user and ok_pass):
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 
 
 @asynccontextmanager
@@ -35,7 +51,6 @@ app.include_router(auth.router)
 async def index(request: Request):
     from sqlalchemy import text
     from database import SessionLocal
-    from models import Scan, Sponsor
 
     db_ok = False
     scan_count = 0
@@ -63,7 +78,7 @@ async def health():
     return {"status": "ok"}
 
 
-@app.get("/admin/generate-qr")
+@app.get("/admin/generate-qr", dependencies=[Depends(require_admin)])
 async def generate_qr(attendee_id: str):
     import qrcode
 
@@ -80,20 +95,13 @@ async def generate_qr(attendee_id: str):
     )
 
 
-@app.get("/admin/scans")
-async def export_scans(request: Request, format: str = "json"):
+@app.get("/admin/scans", dependencies=[Depends(require_admin)])
+async def export_scans(format: str = "json"):
     import csv
     from io import StringIO
     from sqlalchemy import select
     from database import SessionLocal
     from models import Scan
-
-    admin_token = config.ADMIN_TOKEN
-    if admin_token:
-        auth_header = request.headers.get("Authorization", "")
-        if auth_header != f"Bearer {admin_token}":
-            from fastapi.responses import JSONResponse
-            return JSONResponse({"detail": "Unauthorized"}, status_code=401)
 
     async with SessionLocal() as db:
         result = await db.execute(select(Scan).order_by(Scan.scanned_at.desc()))

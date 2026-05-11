@@ -86,7 +86,11 @@ resource "aws_ssm_parameter" "database_url" {
 }
 
 # --- ECS Cluster ---
-resource "aws_ecs_cluster" "main" {
+resource "aws_ssm_parameter" "admin_password" {
+  name  = "/${var.app_name}/ADMIN_PASSWORD"
+  type  = "SecureString"
+  value = var.admin_password
+}
   name = var.app_name
 }
 
@@ -236,11 +240,13 @@ resource "aws_ecs_task_definition" "app" {
     image = "${aws_ecr_repository.app.repository_url}:latest"
     portMappings = [{ containerPort = 8000 }]
     secrets = [
-      { name = "SECRET_KEY", valueFrom = aws_ssm_parameter.secret_key.arn },
-      { name = "DATABASE_URL", valueFrom = aws_ssm_parameter.database_url.arn },
+      { name = "SECRET_KEY",      valueFrom = aws_ssm_parameter.secret_key.arn },
+      { name = "DATABASE_URL",    valueFrom = aws_ssm_parameter.database_url.arn },
+      { name = "ADMIN_PASSWORD",  valueFrom = aws_ssm_parameter.admin_password.arn },
     ]
     environment = [
-      { name = "BASE_URL", value = "https://${var.domain_name}" }
+      { name = "BASE_URL",    value = "https://${var.domain_name}" },
+      { name = "EVENT_NAME",  value = var.event_name },
     ]
     logConfiguration = {
       logDriver = "awslogs"

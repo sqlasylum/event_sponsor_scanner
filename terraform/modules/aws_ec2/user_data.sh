@@ -16,8 +16,9 @@ cd /opt/app
 cat > .env <<'ENVEOF'
 DATABASE_URL=${database_url}
 SECRET_KEY=${secret_key}
+ADMIN_PASSWORD=${admin_password}
+EVENT_NAME=${event_name}
 BASE_URL=${base_url}
-ADMIN_TOKEN=${admin_token}
 ENVEOF
 
 # Start services

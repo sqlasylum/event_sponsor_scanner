@@ -96,11 +96,13 @@ resource "aws_instance" "app" {
   key_name               = var.key_pair_name
 
   user_data = templatefile("${path.module}/user_data.sh", {
-    app_name    = var.app_name
-    database_url = "postgresql+asyncpg://scanner:${var.db_password}@db:5432/scanner"
-    secret_key  = var.secret_key
-    base_url    = var.base_url
-    admin_token = var.admin_token
+    app_name       = var.app_name
+    database_url   = "postgresql+asyncpg://scanner:${var.db_password}@db:5432/scanner"
+    secret_key     = var.secret_key
+    admin_password = var.admin_password
+    event_name     = var.event_name
+    base_url       = var.base_url
+    admin_token    = var.admin_token
   })
 
   tags = { Name = var.app_name }

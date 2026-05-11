@@ -41,6 +41,18 @@ variable "base_url" {
   type        = string
 }
 
+variable "admin_password" {
+  description = "Password for /admin/* routes (username is always 'admin')"
+  type        = string
+  sensitive   = true
+}
+
+variable "event_name" {
+  description = "Display name shown on the status page"
+  type        = string
+  default     = "Event Sponsor Scanner"
+}
+
 variable "admin_token" {
   description = "Bearer token for /admin/* routes (leave empty to disable auth)"
   type        = string
