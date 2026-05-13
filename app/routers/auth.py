@@ -26,6 +26,8 @@ def get_sponsor_email(request: Request) -> str | None:
 @router.get("/login")
 async def login_page(request: Request, next: str = "/login"):
     email = get_sponsor_email(request)
+    if email and next.startswith("/") and next != "/login":
+        return RedirectResponse(url=next, status_code=302)
     scan_count = None
     company = None
     if email:
