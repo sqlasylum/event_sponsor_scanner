@@ -107,7 +107,7 @@ resource "aws_instance" "app" {
 
   user_data = templatefile("${path.module}/user_data.sh", {
     repo_url       = var.repo_url
-    database_url   = "postgresql+asyncpg://scanner:${var.db_password}@db:5432/scanner"
+    db_password    = var.db_password
     secret_key     = var.secret_key
     admin_password = var.admin_password
     event_name     = var.event_name

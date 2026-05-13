@@ -54,7 +54,9 @@
         "ec2:DisassociateAddress",
         "ec2:ModifyInstanceAttribute",
         "ec2:DescribeVpcAttribute",
-        "ec2:DescribeAddressesAttribute"
+        "ec2:DescribeAddressesAttribute",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeInstanceAttribute"
       ],
       "Resource": "*"
     }
