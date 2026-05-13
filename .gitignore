@@ -35,3 +35,4 @@ Thumbs.db
 
 # Local dev overrides
 docker-compose.override.yml
+*.note
