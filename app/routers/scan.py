@@ -30,11 +30,18 @@ async def scan_badge(attendee_id: str, request: Request):
             insert(Scan).values(attendee_id=attendee_id, sponsor_email=email).returning(Scan.id)
         )
         scan_id = result.scalar_one()
+
+        # Total scans for this email
+        from sqlalchemy import func
+        scan_count = (await db.execute(
+            select(func.count()).where(Scan.sponsor_email == email)
+        )).scalar()
+
         await db.commit()
 
     return templates.TemplateResponse(
         "scanned.html",
-        {"request": request, "attendee_id": attendee_id, "email": email, "scan_id": scan_id},
+        {"request": request, "attendee_id": attendee_id, "email": email, "scan_id": scan_id, "scan_count": scan_count},
     )
 
 

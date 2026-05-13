@@ -6,6 +6,10 @@
   <h1>Contact Captured</h1>
   <p class="sub">Badge <strong>{{ attendee_id }}</strong> has been saved to your leads.</p>
   <p class="sub">Logged in as <strong>{{ email }}</strong></p>
+  <div class="scan-count-block">
+    <span class="scan-count-num">{{ scan_count }}</span>
+    <span class="scan-count-label">scan{{ 's' if scan_count != 1 else '' }} recorded</span>
+  </div>
 
   <form id="notes-form" class="notes-form">
     <label for="notes">Notes <span class="optional">(optional)</span></label>
