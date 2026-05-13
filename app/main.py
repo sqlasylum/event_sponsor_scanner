@@ -78,6 +78,61 @@ async def health():
     return {"status": "ok"}
 
 
+@app.get("/admin", dependencies=[Depends(require_admin)])
+async def admin_dashboard(request: Request):
+    from sqlalchemy import text
+    from database import SessionLocal
+
+    db_ok = False
+    scans_last_day = 0
+    by_email = []
+    by_sponsor = []
+    recent_scans = []
+
+    try:
+        async with SessionLocal() as db:
+            await db.execute(text("SELECT 1"))
+            db_ok = True
+
+            scans_last_day = (await db.execute(
+                text("SELECT COUNT(*) FROM scans WHERE scanned_at > NOW() - INTERVAL '24 hours'")
+            )).scalar()
+
+            by_email = (await db.execute(
+                text("SELECT sponsor_email, COUNT(*) as cnt FROM scans GROUP BY sponsor_email ORDER BY cnt DESC")
+            )).all()
+
+            by_sponsor = (await db.execute(text("""
+                SELECT COALESCE(NULLIF(sp.company, ''), sc.sponsor_email) as sponsor, COUNT(*) as cnt
+                FROM scans sc
+                LEFT JOIN sponsors sp ON sc.sponsor_email = sp.email
+                GROUP BY COALESCE(NULLIF(sp.company, ''), sc.sponsor_email)
+                ORDER BY cnt DESC
+            """))).all()
+
+            recent_scans = (await db.execute(text("""
+                SELECT sc.id, sc.attendee_id, sc.sponsor_email,
+                       COALESCE(NULLIF(sp.company, ''), '') as company,
+                       sc.scanned_at, sc.notes
+                FROM scans sc
+                LEFT JOIN sponsors sp ON sc.sponsor_email = sp.email
+                ORDER BY sc.scanned_at DESC
+                LIMIT 10
+            """))).all()
+    except Exception:
+        pass
+
+    return templates.TemplateResponse("admin.html", {
+        "request": request,
+        "event_name": config.EVENT_NAME,
+        "db_ok": db_ok,
+        "scans_last_day": scans_last_day,
+        "by_email": by_email,
+        "by_sponsor": by_sponsor,
+        "recent_scans": recent_scans,
+    })
+
+
 @app.get("/admin/generate-qr", dependencies=[Depends(require_admin)])
 async def generate_qr(attendee_id: str):
     import qrcode
@@ -96,23 +151,28 @@ async def generate_qr(attendee_id: str):
 
 
 @app.get("/admin/scans", dependencies=[Depends(require_admin)])
-async def export_scans(format: str = "json"):
+async def export_scans(format: str = "json", email: str = ""):
     import csv
     from io import StringIO
     from sqlalchemy import select
     from database import SessionLocal
-    from models import Scan
+    from models import Scan, Sponsor
 
     async with SessionLocal() as db:
-        result = await db.execute(select(Scan).order_by(Scan.scanned_at.desc()))
-        scans = result.scalars().all()
+        query = select(Scan, Sponsor.company).join(
+            Sponsor, Scan.sponsor_email == Sponsor.email, isouter=True
+        ).order_by(Scan.scanned_at.desc())
+        if email:
+            query = query.where(Scan.sponsor_email == email.strip().lower())
+        result = await db.execute(query)
+        rows = result.all()
 
     if format == "csv":
         output = StringIO()
         writer = csv.writer(output)
-        writer.writerow(["id", "attendee_id", "sponsor_email", "scanned_at", "notes"])
-        for s in scans:
-            writer.writerow([s.id, s.attendee_id, s.sponsor_email, s.scanned_at.isoformat(), s.notes or ""])
+        writer.writerow(["id", "attendee_id", "sponsor_email", "company", "scanned_at", "notes"])
+        for s, company in rows:
+            writer.writerow([s.id, s.attendee_id, s.sponsor_email, company or "", s.scanned_at.isoformat(), s.notes or ""])
         output.seek(0)
         return StreamingResponse(
             iter([output.getvalue()]),
@@ -125,8 +185,9 @@ async def export_scans(format: str = "json"):
             "id": s.id,
             "attendee_id": s.attendee_id,
             "sponsor_email": s.sponsor_email,
+            "company": company,
             "scanned_at": s.scanned_at.isoformat(),
             "notes": s.notes,
         }
-        for s in scans
+        for s, company in rows
     ]

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS sponsors (
     id         SERIAL PRIMARY KEY,
     email      TEXT NOT NULL UNIQUE,
+    company    TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

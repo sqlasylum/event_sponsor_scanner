@@ -9,6 +9,7 @@ class Sponsor(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    company: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
         default=lambda: datetime.now(timezone.utc),

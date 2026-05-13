@@ -33,5 +33,5 @@ Thumbs.db
 .idea/
 *.swp
 
-#notes
-*.note
+# Local dev overrides
+docker-compose.override.yml

@@ -27,17 +27,22 @@ def get_sponsor_email(request: Request) -> str | None:
 async def login_page(request: Request, next: str = "/login"):
     email = get_sponsor_email(request)
     scan_count = None
+    company = None
     if email:
         from sqlalchemy import select, func
         from database import SessionLocal
-        from models import Scan
+        from models import Scan, Sponsor
         async with SessionLocal() as db:
             result = await db.execute(
                 select(func.count()).where(Scan.sponsor_email == email)
             )
             scan_count = result.scalar()
+            sponsor = await db.execute(select(Sponsor).where(Sponsor.email == email))
+            sponsor = sponsor.scalar_one_or_none()
+            if sponsor:
+                company = sponsor.company
     return templates.TemplateResponse(
-        "login.html", {"request": request, "next": next, "email": email, "scan_count": scan_count}
+        "login.html", {"request": request, "next": next, "email": email, "scan_count": scan_count, "company": company}
     )
 
 
@@ -45,9 +50,12 @@ async def login_page(request: Request, next: str = "/login"):
 async def login_submit(
     request: Request,
     email: str = Form(...),
+    company: str = Form(...),
     next: str = Form(default="/"),
 ):
     email = email.strip().lower()
+    company = company.strip()
+
     if not email or "@" not in email:
         return templates.TemplateResponse(
             "login.html",
@@ -57,6 +65,17 @@ async def login_submit(
 
     if not next.startswith("/"):
         next = "/"
+
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
+    from database import SessionLocal
+    from models import Sponsor
+    async with SessionLocal() as db:
+        stmt = pg_insert(Sponsor).values(email=email, company=company).on_conflict_do_update(
+            index_elements=["email"],
+            set_={"company": company},
+        )
+        await db.execute(stmt)
+        await db.commit()
 
     token = signer.dumps(email)
     response = RedirectResponse(url=next, status_code=303)
