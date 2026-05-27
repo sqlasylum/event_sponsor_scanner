@@ -40,7 +40,11 @@
 
 <div class="admin-header">
   <h1>{{ event_name }} — Admin</h1>
-  <p>Dashboard</p>
+  <p>Dashboard &nbsp;·&nbsp;
+    <a href="/admin/attendees" style="color:#4299e1;text-decoration:underline;font-size:0.9rem;">View Attendees</a> &nbsp;·&nbsp;
+    <a href="/admin/leads" style="color:#4299e1;text-decoration:underline;font-size:0.9rem;">Leads Report</a> &nbsp;·&nbsp;
+    <a href="/admin/upload-attendees" style="color:#4299e1;text-decoration:underline;font-size:0.9rem;">Upload Attendees CSV</a>
+  </p>
 </div>
 
 <div class="stat-cards">
@@ -133,5 +137,11 @@
   <p class="empty">No scans yet.</p>
   {% endif %}
   <a href="/admin/scans?format=csv" class="export-link">Export all scans as CSV</a>
+</div>
+
+<div style="margin-top:1.5rem; text-align:right;">
+  <form method="post" action="/admin/reset" onsubmit="return confirm('Are you sure? This will permanently delete ALL scans, sponsors, and attendees and cannot be undone.')">
+    <button type="submit" style="background:#fff5f5;border:1.5px solid #feb2b2;color:#c53030;padding:0.6rem 1.25rem;border-radius:8px;font-size:0.875rem;font-weight:600;cursor:pointer;">Reset All Data</button>
+  </form>
 </div>
 {% endblock %}

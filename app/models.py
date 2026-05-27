@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import String, ForeignKey, TIMESTAMP
+from sqlalchemy import String, ForeignKey, TIMESTAMP, BigInteger, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from database import Base
 
@@ -31,3 +31,14 @@ class Scan(Base):
         nullable=False,
     )
     notes: Mapped[str | None] = mapped_column(String, nullable=True)
+
+
+class EventAttendee(Base):
+    __tablename__ = "event_attendees"
+
+    attendee_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    attendee_first_name: Mapped[str | None] = mapped_column(Text, nullable=True)
+    attendee_last_name: Mapped[str | None] = mapped_column(Text, nullable=True)
+    organization: Mapped[str | None] = mapped_column(Text, nullable=True)
+    attendee_email: Mapped[str | None] = mapped_column(Text, nullable=True)
+    qr_code: Mapped[str | None] = mapped_column(Text, nullable=True)

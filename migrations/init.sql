@@ -15,3 +15,12 @@ CREATE TABLE IF NOT EXISTS scans (
 
 CREATE INDEX IF NOT EXISTS scans_attendee_id_idx ON scans(attendee_id);
 CREATE INDEX IF NOT EXISTS scans_sponsor_email_idx ON scans(sponsor_email);
+
+CREATE TABLE IF NOT EXISTS event_attendees (
+    attendee_id         BIGINT PRIMARY KEY,
+    attendee_first_name TEXT,
+    attendee_last_name  TEXT,
+    organization        TEXT,
+    attendee_email      TEXT,
+    qr_code             TEXT
+);
