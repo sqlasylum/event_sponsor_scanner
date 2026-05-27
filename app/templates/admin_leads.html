@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Leads Report — {{ event_name }}{% endblock %}
+{% block content %}
+<style>
+  main { max-width: 1100px; }
+  .back-link { display: inline-block; font-size: 0.85rem; color: #4299e1; text-decoration: underline; margin-bottom: 1.25rem; }
+  .panel { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.25rem; }
+  .panel-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+  .panel-header h1 { font-size: 1.2rem; font-weight: 700; color: #1a202c; margin: 0; }
+  .filter-row { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; }
+  .filter-row label { font-size: 0.85rem; font-weight: 600; color: #4a5568; display: block; margin-bottom: 0.25rem; }
+  .filter-row select[multiple] {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.875rem;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    min-width: 200px;
+    max-height: 120px;
+  }
+  .filter-row select[multiple]:focus { border-color: #4299e1; }
+  .btn { padding: 0.45rem 1rem; font-size: 0.875rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  .btn-blue { background: #4299e1; color: #fff; }
+  .btn-blue:hover { background: #3182ce; }
+  .btn-green { background: #48bb78; color: #fff; text-decoration: none; display: inline-block; }
+  .btn-green:hover { background: #38a169; }
+  .count { font-size: 0.85rem; color: #718096; margin-bottom: 0.75rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; font-weight: 600; color: #718096; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 0.5rem 0.5rem; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 0.45rem 0.5rem; color: #2d3748; border-bottom: 1px solid #f0f4f8; word-break: break-word; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f7fafc; }
+  .empty { color: #a0aec0; font-size: 0.9rem; padding: 1rem 0; }
+  .hint { font-size: 0.78rem; color: #a0aec0; margin-top: 0.25rem; }
+</style>
+
+<a href="/admin" class="back-link">← Back to Admin</a>
+
+<div class="panel">
+  <div class="panel-header">
+    <h1>Leads Report</h1>
+    <div class="filter-row">
+      <form id="filter-form" method="get" action="/admin/leads" style="display:flex;align-items:flex-end;gap:0.5rem;flex-wrap:wrap">
+        <div>
+          <label for="company">Filter by Company</label>
+          <select id="company" name="company" multiple>
+            {% for c in companies %}
+            <option value="{{ c }}" {% if c in selected_companies %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+          <div class="hint">Hold Ctrl / Cmd to select multiple</div>
+        </div>
+        <button type="submit" class="btn btn-blue">Apply</button>
+        <button type="button" class="btn btn-green" onclick="exportCSV()">Export CSV</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="count">
+    {{ rows | length }} lead{{ 's' if rows | length != 1 else '' }}
+    {% if selected_companies %}
+      for <strong>{{ selected_companies | join(', ') }}</strong>
+    {% endif %}
+  </div>
+
+  {% if rows %}
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Scanner Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Organization</th>
+        <th>Attendee Email</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.company or '' }}</td>
+        <td>{{ r.scanner_email }}</td>
+        <td>{{ r.attendee_first_name or '' }}</td>
+        <td>{{ r.attendee_last_name or '' }}</td>
+        <td>{{ r.organization or '' }}</td>
+        <td>{{ r.attendee_email or '' }}</td>
+        <td>{{ r.attendee_notes or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No leads found{% if selected_companies %} for the selected companies{% endif %}. Make sure attendees have been <a href="/admin/upload-attendees" style="color:#4299e1">imported</a> and scans have been recorded.</p>
+  {% endif %}
+</div>
+
+<script>
+  function exportCSV() {
+    const select = document.getElementById('company');
+    const selected = Array.from(select.selectedOptions).map(o => o.value);
+    const params = new URLSearchParams();
+    params.set('format', 'csv');
+    selected.forEach(c => params.append('company', c));
+    window.location.href = '/admin/leads?' + params.toString();
+  }
+</script>
+{% endblock %}

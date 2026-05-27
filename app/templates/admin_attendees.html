@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Attendees — {{ event_name }}{% endblock %}
+{% block content %}
+<style>
+  main { max-width: 1000px; }
+  .back-link { display: inline-block; font-size: 0.85rem; color: #4299e1; text-decoration: underline; margin-bottom: 1.25rem; }
+  .panel { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 1.25rem; }
+  .panel-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; }
+  .panel-header h1 { font-size: 1.2rem; font-weight: 700; color: #1a202c; }
+  .panel-header .count { font-size: 0.85rem; color: #718096; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; font-weight: 600; color: #718096; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 0.5rem 0.5rem; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 0.45rem 0.5rem; color: #2d3748; border-bottom: 1px solid #f0f4f8; word-break: break-word; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f7fafc; }
+  .empty { color: #a0aec0; font-size: 0.9rem; padding: 1rem 0; }
+</style>
+
+<a href="/admin" class="back-link">← Back to Admin</a>
+
+<div class="panel">
+  <div class="panel-header">
+    <h1>Event Attendees</h1>
+    <span class="count">{{ rows | length }} record{{ 's' if rows | length != 1 else '' }}</span>
+  </div>
+
+  {% if rows %}
+  <table>
+    <thead>
+      <tr>
+        <th>Attendee ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Organization</th>
+        <th>Email</th>
+        <th>QR Code</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.attendee_id }}</td>
+        <td>{{ r.attendee_first_name or '' }}</td>
+        <td>{{ r.attendee_last_name or '' }}</td>
+        <td>{{ r.organization or '' }}</td>
+        <td>{{ r.attendee_email or '' }}</td>
+        <td>{{ r.qr_code or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty">No attendees imported yet. <a href="/admin/upload-attendees" style="color:#4299e1">Upload a CSV</a> to get started.</p>
+  {% endif %}
+</div>
+{% endblock %}
