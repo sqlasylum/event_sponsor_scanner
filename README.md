@@ -136,3 +136,23 @@ CREATE TABLE scans (
 ## Contributing
 
 Pull requests are welcome. This project is MIT licensed — see [LICENSE](LICENSE).
+
+## Sponsor Instructions: Scan Badges With Your Phone
+
+Share the steps below with sponsor booth staff.
+
+1. Open your phone camera app.
+2. Point the camera at the attendee's QR badge.
+3. Tap the QR link when it appears.
+4. When prompted, enter an email address. I suggest keeping one email for all people scanning to make it easier to correlate.  Also make sure company name is same for all scanners. You should only have to do this once. 
+5. After login, you will return to the scan page automatically.
+6. Confirm you see "Scan recorded" (or the success confirmation page).
+7. Optional: add notes right away (for example: product interest, follow-up date, priority).
+8. Repeat for each attendee badge.
+9. You may have to close out browser pages on your phone, I find that most phones will open a new page for each scan.  
+
+### Important Notes for Sponsors
+
+- You only need to log in once per phone/browser session.
+- If you are logged out, just sign in again and continue scanning.
+- If you need to login as someone else you can scan a badge and choose "Sign in as someone else"
